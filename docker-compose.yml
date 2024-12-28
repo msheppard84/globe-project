@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  globe:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./globe:/app  # Mount the root directory of your code
+    working_dir: /app  # Set the working directory inside the container

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Globe</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        const container = document.getElementById('container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // Load texture for the globe
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('/static/map.png', function (texture) {
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+            const globe = new THREE.Mesh(geometry, material);
+            scene.add(globe);
+
+            camera.position.z = 2;
+
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            let tilt = 0; // Tracks X-axis tilt
+            const MAX_TILT = Math.PI / 4; // Limit tilt to ±15 degrees (in radians)
+            const AUTO_SPIN_SPEED = 0.001; // Adjust speed of automatic spin
+
+            container.addEventListener('mousedown', function (e) {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            container.addEventListener('mousemove', function (e) {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.clientX - previousMousePosition.x,
+                        y: e.clientY - previousMousePosition.y,
+                    };
+
+                    // Spin the globe around Y-axis (horizontal rotation)
+                    globe.rotation.y += deltaMove.x * 0.01;
+
+                    // Tilt the globe around X-axis (vertical rotation), with clamping
+                    tilt += deltaMove.y * 0.01;
+                    tilt = Math.max(-MAX_TILT, Math.min(MAX_TILT, tilt)); // Clamp tilt
+                    globe.rotation.x = tilt;
+
+                    previousMousePosition = { x: e.clientX, y: e.clientY };
+                }
+            });
+
+            container.addEventListener('mouseup', function () {
+                isDragging = false;
+            });
+
+            container.addEventListener('mouseleave', function () {
+                isDragging = false;
+            });
+
+            const animate = function () {
+                requestAnimationFrame(animate);
+
+                // Automatically spin the globe when not being dragged
+                if (!isDragging) {
+                    globe.rotation.y += AUTO_SPIN_SPEED;
+                }
+
+                renderer.render(scene, camera);
+            };
+            animate();
+        });
+    </script>
+</body>
+</html>
