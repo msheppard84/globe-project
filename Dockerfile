@@ -4,16 +4,14 @@ FROM python:3.9-slim
 # Set the working directory
 WORKDIR /app
 
-# Install Flask
-RUN pip install flask
+# Install Flask and Gunicorn
+RUN pip install flask gunicorn
 
 # Copy the application files
-COPY globe.py /app/
-COPY templates/ /app/templates/
-COPY static/ /app/static/
+COPY . .
 
 # Expose port 8080
 EXPOSE 8080
 
-# Run the application
-CMD ["python", "globe.py"]
+# Run the application using Gunicorn
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "globe:app"]
