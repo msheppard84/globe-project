@@ -2,5 +2,5 @@ services:
   globe:
     image: ghcr.io/msheppard84/globe-app:latest  # Replace with your GitHub Container Registry URL
     ports:
-      - "8082:8080"  # Map container's port 8080 to the host's port 8080
+      - "8083:8080"  # Map container's port 8080 to the host's port 8080
     restart: unless-stopped  # Restart policy
