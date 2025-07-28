@@ -26,3 +26,7 @@ jobs:
         run: |
           docker build -t ghcr.io/msheppard84/globe-app:latest .
           docker push ghcr.io/msheppard84/globe-app:latest
+
+      - name: Trigger Portainer Webhook
+        run: |
+          curl -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}"

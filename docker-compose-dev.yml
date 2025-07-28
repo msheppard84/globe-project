@@ -1,0 +1,6 @@
+services:
+  globe:
+    ports:
+      - "8083:8080"  # Dev runs on 8083
+    environment:
+      - FLASK_ENV=development
